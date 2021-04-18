@@ -137,7 +137,6 @@ class Reinforcement(ms.AI):
         Do any kind of computation and return a (x, y) tuple for the next cell to reveal.
         """
         if len(self.positionStack):
-            print("Before clicking")
             currPosition = self.positionStack.pop()
             self.curr_Position = currPosition
             return currPosition

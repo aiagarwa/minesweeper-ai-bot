@@ -68,7 +68,18 @@ class Reinforcement(ms.AI):
         for x, y in self.getAdjacents(position):
             if (x, y) in self.exposed_squares:
                 if self.exposed_square_num[(x,y)] >=1:
-                    reward += -20 # Negative reward if any adjacent tile indicates there is mine 
+                    if self.exposed_square_num[(x,y)] ==1:
+                        reward += -10 # Negative reward if any adjacent tile indicates there is mine 
+                    elif self.exposed_square_num[(x,y)] ==2:
+                        reward += -15 # Negative reward if any adjacent tile indicates there is mine 
+                    elif self.exposed_square_num[(x,y)] ==3:
+                        reward += -20 # Negative reward if any adjacent tile indicates there is mine 
+                    elif self.exposed_square_num[(x,y)] ==4:
+                        reward += -25 # Negative reward if any adjacent tile indicates there is mine 
+                    elif self.exposed_square_num[(x,y)] ==5:
+                        reward += -30 # Negative reward if any adjacent tile indicates there is mine 
+                    elif self.exposed_square_num[(x,y)] ==6:
+                        reward += -35 # Negative reward if any adjacent tile indicates there is mine 
                 else:
                     reward += 10
             else:
@@ -193,7 +204,7 @@ num_games = 1
 # Configuration of the game.
 # Possible parameters are 'width', 'height', 'num_mines', 'auto_expand_clear_areas'
 # To place the mines as you want, see file 'minesweeper/minesweeper.py', method '_place_mines'
-config = ms.GameConfig(num_mines=3, auto_expand_clear_areas=False)
+config = ms.GameConfig(num_mines=5, auto_expand_clear_areas=False)
 
 # Create an instance of our AI (startPosition has been created by myself, can be random or anything else)
 ai = Reinforcement((0,0))

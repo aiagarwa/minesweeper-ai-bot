@@ -157,8 +157,7 @@ class Game:
     def game_over(self):
         """bool: Is the game over"""
         return self._explosion or self._quit or \
-               self._num_exposed_squares == self._num_safe_squares or \
-               len(self._flags)>self.num_mines
+               self._num_exposed_squares == self._num_safe_squares
 
     @property
     def result(self):

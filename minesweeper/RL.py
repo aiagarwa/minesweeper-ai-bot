@@ -65,25 +65,18 @@ class Reinforcement(ms.AI):
     def getReward(self, position):
         # reward for exposed state
         reward = 0
+        count = 0
         for x, y in self.getAdjacents(position):
             if (x, y) in self.exposed_squares:
+                count+=1
                 if self.exposed_square_num[(x,y)] >=1:
-                    if self.exposed_square_num[(x,y)] ==1:
-                        reward += -10 # Negative reward if any adjacent tile indicates there is mine 
-                    elif self.exposed_square_num[(x,y)] ==2:
-                        reward += -15 # Negative reward if any adjacent tile indicates there is mine 
-                    elif self.exposed_square_num[(x,y)] ==3:
-                        reward += -20 # Negative reward if any adjacent tile indicates there is mine 
-                    elif self.exposed_square_num[(x,y)] ==4:
-                        reward += -25 # Negative reward if any adjacent tile indicates there is mine 
-                    elif self.exposed_square_num[(x,y)] ==5:
-                        reward += -30 # Negative reward if any adjacent tile indicates there is mine 
-                    elif self.exposed_square_num[(x,y)] ==6:
-                        reward += -35 # Negative reward if any adjacent tile indicates there is mine 
+                    reward+= self.exposed_square_num[(x,y)]*(-10)
                 else:
                     reward += 10
             else:
                 reward +=0
+        if count == len(self.getAdjacents(position)):
+            reward+=-50
         return reward
 
     def reset(self, config):
@@ -112,34 +105,52 @@ class Reinforcement(ms.AI):
                     count_exp+=1
                     if self.exposed_square_num[(x2,y2)] >=1:
                         count_num+=1
-            # print(self._flags)
-            # Flag the tile which is assumed to have mine
-            if count_num >= len(self.getAdjacents(state))-1:
-                self._flags.add(state)
             
             # Calculate the q values
-            elif state not in self.exposed_squares and state not in self._flags:
+            if state not in self.exposed_squares and state not in self._flags:
                 current_state_value = self.getQValue(state)
                 self.values[(state)]=((1-self.alpha)*current_state_value)+self.alpha*(self.getReward(state))
                 states_dict[state]= self.values[(state)]
+
+        if states_dict:
+            max_val = max(states_dict.values())
+            worst_position = min(states_dict, key= lambda x: states_dict[x]) # Get the state with least reward to check if it is mine 
+        else:
+            max_val = 0
+            worst_position = "None"
         # print(not states_dict)
         # Get the position with maximum q value
-        if states_dict:
+        if states_dict and max_val>(0):
             best_position = max(states_dict, key= lambda x: states_dict[x])
             # print(states_dict)
-            print("Best = ",best_position)
+            # print("Best = ",best_position)
             self.positionStack.append(best_position)
             # print(self.positionStack)
         else:
+            # Flag the tile which is assumed to have mine
+            if worst_position!="None" and count_num >= len(self.getAdjacents(worst_position))-1 and len(self._flags)!=config.num_mines:
+                self._flags.add(worst_position)
+
             # If all the adjacent tiles are exposed, get the position of any random tile.
-            while True:
+            states_dict_random={}
+            safe_squares = (config.height*config.width)-len(self._flags)
+            count = 0
+            visited_cell = set()
+            while count != safe_squares - len(self.exposed_square_num):
                 x = random.randint(0, self.width - 1)
                 y = random.randint(0, self.height - 1)
-                print(x,y)
-                if (x, y) not in self.exposed_squares and  (x, y) not in self._flags:
-                    self.positionStack.append((x, y))
-                    # print(self.positionStack)
-                    break
+                state = (x,y)
+                # Calculate the q value for all cells that are not exposed and click the one with maximum reward
+                if (x, y) not in self.exposed_squares and (x, y) not in self._flags and (x,y) not in visited_cell:
+                    current_state_value = self.getQValue(state)
+                    self.values[(state)]=((1-self.alpha)*current_state_value)+self.alpha*(self.getReward(state))
+                    states_dict_random[state]= self.values[(state)]
+                    count+=1
+                visited_cell.add(state)
+            best_position = max(states_dict_random, key= lambda x: states_dict_random[x])
+            # print(states_dict_random)
+            # print("Best = ",best_position)
+            self.positionStack.append(best_position)
 
 
     def next(self):
@@ -204,7 +215,7 @@ num_games = 1
 # Configuration of the game.
 # Possible parameters are 'width', 'height', 'num_mines', 'auto_expand_clear_areas'
 # To place the mines as you want, see file 'minesweeper/minesweeper.py', method '_place_mines'
-config = ms.GameConfig(num_mines=5, auto_expand_clear_areas=False)
+config = ms.GameConfig(num_mines=9, auto_expand_clear_areas=False)
 
 # Create an instance of our AI (startPosition has been created by myself, can be random or anything else)
 ai = Reinforcement((0,0))

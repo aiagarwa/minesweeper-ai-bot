@@ -215,7 +215,7 @@ num_games = 1
 # Configuration of the game.
 # Possible parameters are 'width', 'height', 'num_mines', 'auto_expand_clear_areas'
 # To place the mines as you want, see file 'minesweeper/minesweeper.py', method '_place_mines'
-config = ms.GameConfig(num_mines=9, auto_expand_clear_areas=False)
+config = ms.GameConfig(num_mines=3, auto_expand_clear_areas=False)
 
 # Create an instance of our AI (startPosition has been created by myself, can be random or anything else)
 ai = Reinforcement((0,0))

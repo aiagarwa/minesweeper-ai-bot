@@ -68,9 +68,9 @@ class Reinforcement(ms.AI):
         count = 0
         for x, y in self.getAdjacents(position):
             if (x, y) in self.exposed_squares:
-                count+=1
                 if self.exposed_square_num[(x,y)] >=1:
                     reward+= self.exposed_square_num[(x,y)]*(-10)
+                    count+=1
                 else:
                     reward += 10
             else:

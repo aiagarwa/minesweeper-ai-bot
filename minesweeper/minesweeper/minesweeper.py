@@ -110,6 +110,7 @@ class Game:
         self.exposed = [[False for y in range(self.height)] for x in range(self.width)]
         self.counts = [[0 for y in range(self.height)] for x in range(self.width)]
         self._flags = {}
+        self.locations = set()
 
         if mines:
             self.mines = copy.deepcopy(mines)
@@ -149,6 +150,8 @@ class Game:
             status = GameStatus.QUIT
         elif self._explosion:
             status = GameStatus.DEFEAT
+        elif self.find_flags:
+            status = GameStatus.VICTORY
         else:
             status = GameStatus.VICTORY
         return status
@@ -171,6 +174,9 @@ class Game:
         logger.info("Quitting")
         self._quit = True
 
+    def find_flags(self):
+        return self._flags == self.locations
+
     def select(self, x, y):
         """Select a square to expose.
 
@@ -184,7 +190,7 @@ class Game:
         Raises:
             ValueError: if game over, squared already selected, or position off the board
         """
-        logger.info("Player has picked %d, %d", x, y)
+        # logger.info("Player has picked %d, %d", x, y)
         if self._is_outside_board(x, y):
             raise ValueError('Position ({},{}) is outside the board'.format(x, y))
         if self._explosion:
@@ -194,12 +200,11 @@ class Game:
         self.num_moves += 1
         # must call update before accessing the status
         squares = self._update(x, y)
-        logger.info("%d squares are revealed", len(squares))
+        # logger.info("%d squares are revealed", len(squares))
         return MoveResult(self.status, squares)
 
     def _place_mines(self):
-        locations = set()
-        while len(locations) < self.num_mines:
+        while len(self.locations) < self.num_mines:
             x = random.randint(0, self.width - 1)
             y = random.randint(0, self.height - 1)
 
@@ -207,8 +212,8 @@ class Game:
             # x = self.width - 1
             # y = self.height - 1
 
-            locations.add((x, y))
-        for location in locations:
+            self.locations.add((x, y))
+        for location in self.locations:
             self.mines[location[0]][location[1]] = True
 
     def _init_counts(self):
@@ -378,6 +383,8 @@ def run_games(config, num_games, ai, viz=None):
     results = []
     for n in range(num_games):
         logger.info("Starting game %d", n + 1)
+        # global games_won
+        # global games_lost
         ai.reset(config)
         game = Game(config)
         runner = Runner(game, ai)
@@ -386,5 +393,9 @@ def run_games(config, num_games, ai, viz=None):
         else:
             for _ in runner:
                 pass
+        # if game.result.victory:
+        #     games_won += 1
+        # else:
+        #     games_lost += 1
         results.append(game.result)
     return results

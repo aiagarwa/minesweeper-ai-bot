@@ -21,7 +21,6 @@ class BreathFirstSearch(ms.AI):
         self.positionQueue = [startPosition]
         self.has_mine = dict()
         self.safe = set()
-        self.temp_queue = []
         self.uncertain = []
 
     def getAdjacents(self, position):
@@ -70,9 +69,8 @@ class BreathFirstSearch(ms.AI):
 
             elif len(self.uncertain):
                 currPosition = self.uncertain.pop(0)
+                self.label_mine(currPosition)
                 if currPosition not in self.exposed_squares and currPosition not in self._flags:
-                    self.label_mine(currPosition)
-                    self.add_safe_nodes(currPosition)
                     return currPosition
 
         # If you need to set a flag, use this method
@@ -89,13 +87,11 @@ class BreathFirstSearch(ms.AI):
             -> ms.GameStatus.PLAYING, ms.GameStatus.VICTORY, ms.GameStatus.DEFEAT, ms.GameStatus.QUIT
         """
         if result.status == ms.GameStatus.VICTORY:
-            print("THE AI WON :D")
+            print("THE BFS WON :D")
         elif result.status == ms.GameStatus.DEFEAT:
-            print("THE AI LOST :'(")
+            print("THE BFS LOST :'(")
         elif result.status == ms.GameStatus.QUIT:
-            print("THE AI GAVE UP...")
-        elif len(self._flags) == config.num_mines:
-            print("THE AI WON :D")
+            print("THE BFS GAVE UP...")
 
         for square in result.new_squares:
             position = (square.x, square.y)
@@ -105,7 +101,6 @@ class BreathFirstSearch(ms.AI):
                 for item in adjacent:
                     if item not in self.exposed_squares:
                         self.add_safe_nodes(item)
-                        self.safe.add(item)
             else:
                 self.has_mine[position] = square.num_mines
                 self.label_mine(position)
@@ -132,19 +127,18 @@ class BreathFirstSearch(ms.AI):
             for item in un_reveal_adjacent:
                 self._flags.add(item)
         elif num_mine == num_reveal_flag_adjacent:
-            for item in adjacent:
+            for item in un_reveal_adjacent:
                 self.add_safe_nodes(item)
-                self.safe.add(item)
         else:
             for item in un_reveal_adjacent:
-                self.uncertain.append(item)
+                if item not in self.safe:
+                    self.uncertain.append(item)
 
     def add_safe_nodes(self, position):
         if position not in self.exposed_squares:
-                if position not in self.safe:
-                    self.positionQueue.append(position)
-                # elif (x, y) not in self._flags:
-                #     self.temp_queue.append((x, y))
+            if position not in self.safe:
+                self.positionQueue.append(position)
+                self.safe.add(position)
 
 
 # This is just a configuration for the logger
@@ -154,20 +148,20 @@ print("This will play a single game and then quit.")
 print("The minesweeper window needs focus to capture a key press.")
 print()
 
-# Number of games to play in a row (useful for testing)
-num_games = 100
-
-# Configuration of the game.
-# Possible parameters are 'width', 'height', 'num_mines', 'auto_expand_clear_areas'
-# To place the mines as you want, see file 'minesweeper/minesweeper.py', method '_place_mines'
-config = ms.GameConfig(width=8, height=8, num_mines=4, auto_expand_clear_areas=False)
-
-# Create an instance of our AI (startPosition has been created by myself, can be random or anything else)
-ai = BreathFirstSearch((0, 0))
-
-# Create a game visualizer - use pause=1 to execute a new move every 1 second (or any other number)
-# viz = ms.PyGameVisualizer(pause=1, next_game_prompt=True)
-
-# Run the game(s)
-result = ms.run_games(config, num_games, ai, None).pop()
-print('Game lasted {0} moves'.format(result.num_moves))
+# # Number of games to play in a row (useful for testing)
+# num_games = 1
+#
+# # Configuration of the game.
+# # Possible parameters are 'width', 'height', 'num_mines', 'auto_expand_clear_areas'
+# # To place the mines as you want, see file 'minesweeper/minesweeper.py', method '_place_mines'
+# config = ms.GameConfig(width=8, height=8, num_mines=3, auto_expand_clear_areas=False)
+#
+# # Create an instance of our AI (startPosition has been created by myself, can be random or anything else)
+# ai = BreathFirstSearch((3, 3))
+#
+# # Create a game visualizer - use pause=1 to execute a new move every 1 second (or any other number)
+# # viz = ms.PyGameVisualizer(pause=1, next_game_prompt=True)
+#
+# # Run the game(s)
+# result = ms.run_games(config, num_games, ai, None).pop()
+# print('Game lasted {0} moves'.format(result.num_moves))

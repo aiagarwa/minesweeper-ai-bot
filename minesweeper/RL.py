@@ -95,7 +95,6 @@ class Reinforcement(ms.AI):
         """
         # print("Exposed:",self.exposed_squares)
         states_dict = {}
-        print("Entered to update value")
         # For the next position check if all the adjacent tiles are exposed and indicating the position has mine.
         for x, y in self.getAdjacents(self.curr_Position):
             state = (x,y)

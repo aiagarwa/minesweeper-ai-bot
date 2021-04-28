@@ -1,6 +1,5 @@
 import logging
 import minesweeper as ms
-import random
 
 
 class BreathFirstSearch(ms.AI):
@@ -88,10 +87,13 @@ class BreathFirstSearch(ms.AI):
         """
         if result.status == ms.GameStatus.VICTORY:
             print("THE BFS WON :D")
+            return
         elif result.status == ms.GameStatus.DEFEAT:
             print("THE BFS LOST :'(")
+            return
         elif result.status == ms.GameStatus.QUIT:
             print("THE BFS GAVE UP...")
+            return
 
         for square in result.new_squares:
             position = (square.x, square.y)

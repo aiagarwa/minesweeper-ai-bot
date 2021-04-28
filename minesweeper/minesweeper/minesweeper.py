@@ -109,7 +109,7 @@ class Game:
         self._num_safe_squares = self.width * self.height - self.num_mines
         self.exposed = [[False for y in range(self.height)] for x in range(self.width)]
         self.counts = [[0 for y in range(self.height)] for x in range(self.width)]
-        self._flags = {}
+        self._flags = set()
         self.locations = set()
 
         if mines:
@@ -127,7 +127,7 @@ class Game:
 
     @flags.setter
     def flags(self, flags):
-        self._flags = set(flags)
+        self._flags = flags
 
     @property
     def state(self):
@@ -160,7 +160,7 @@ class Game:
     def game_over(self):
         """bool: Is the game over"""
         return self._explosion or self._quit or \
-               self._num_exposed_squares == self._num_safe_squares
+               self._num_exposed_squares == self._num_safe_squares or self.find_flags()
 
     @property
     def result(self):

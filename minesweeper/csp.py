@@ -280,8 +280,12 @@ class CSP_agent(ms.AI):
                 if (x, y) not in self.exposed_squares:
                     unrevealed_cell_neighbours.append((x, y))
 
+            if len(unrevealed_cell_neighbours ) == 0:
+                continue
+
             # get the risk from a rough calculation
-            risk = exposed_cell_variable.value - number_of_cell_mines_found
+            risk = (exposed_cell_variable.value - number_of_cell_mines_found)/len(unrevealed_cell_neighbours)
+
             # add risk value to each of the neighbours
             for cell_neighbour in unrevealed_cell_neighbours:
                 if cell_neighbour not in unrevealed_cells:

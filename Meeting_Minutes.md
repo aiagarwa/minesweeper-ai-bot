@@ -35,11 +35,6 @@
 
 ### Meeting Minutes 07/04/2021
 - Report everyone's progress
-- Boris introduced the framework after
-
-
-### Meeting Minutes 07/04/2021
-- Report everyone's progress
 - Boris implemented and introduced the framework
 - The basic DFS approach was implemented and tested on the framework
 

@@ -4,7 +4,7 @@ from bfs import BreathFirstSearch
 from csp import CSP_agent
 from RL import Reinforcement
 
-statistics = {'size': '8 * 8', 'mines': 3, 'complete': 0, 'win_steps': 0, 'win_rate': 0, 'games_won': 0, 'games_lost': 0,
+statistics = {'size': 8, 'mines': 3, 'complete': 0, 'win_steps': 0, 'win_rate': 0, 'games_won': 0, 'games_lost': 0,
               'type': ''}
 RANDOM = 1
 BFS = 2
@@ -48,7 +48,7 @@ def test(width=8, height=8, mine=3, types=None):
             win_steps = int(steps / won)
         else:
             win_steps = 0
-        statistic_list.append({'size': str(width) + '*' + str(height), 'mines': mine,
+        statistic_list.append({'size': width, 'mines': mine,
                                'complete': round(complete / 100, 2),
                                'win_steps': win_steps,
                                'win_rate': round(won / (won + lost), 2),

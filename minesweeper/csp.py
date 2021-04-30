@@ -90,6 +90,9 @@ class CSP_agent(ms.AI):
         # try to reduce the constraints and infer new non-mine variables
         self.reduce_constraints()
 
+        # add flags when find new mines
+        self.flag_all_mines()
+
         if self._check_solvable_csp():
             # click randomly
             return self.click_random_cell_with_heuristic()

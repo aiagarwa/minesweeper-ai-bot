@@ -28,11 +28,14 @@ The `demo.py` script runs a single game using a random bot.
 python demo.py
 ```
 
-Running trial DFS (yeah we finally have it)
+Running the agent we built
 -------------------------------------------
 
 ```
 python dfs.py
+python bfs.py
+python csp.py
+python RL.py
 ```
 
 
